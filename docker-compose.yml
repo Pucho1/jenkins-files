@@ -1,0 +1,41 @@
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:jdk21
+    ports:
+      - "8080:8080"
+      # - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - net
+  remote_host:
+    container_name: remote_host
+    image: remote_host_image
+    build:
+      context: Fedora
+      # dockerfile: Dockerfile
+    networks:
+      - net  
+  
+  db_host:
+    container_name: db
+    image: mysql:8.4.3-oracle
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      # MYSQL_DATABASE: example_db
+      # MYSQL_USER: example_user
+      # MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
+volumes:
+  jenkins_home: {}
+  db_data: {}
