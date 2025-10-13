@@ -6,7 +6,7 @@ services:
       - "8080:8080"
       # - "50000:50000"
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - jenkins_home1:/var/jenkins_home
     networks:
       - net
   remote_host:
@@ -37,5 +37,5 @@ networks:
   net:
     driver: bridge
 volumes:
-  jenkins_home: {}
+  jenkins_home1: {}
   db_data: {}
