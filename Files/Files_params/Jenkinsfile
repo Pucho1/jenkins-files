@@ -1,0 +1,57 @@
+pipeline{
+    agent any
+    parameters{
+        string(name:'APELLIDO', description: 'Ingrese su apellido')
+    }
+    environment {
+        // Define environment variables here
+        EXAMPLE_VAR = 'example_value'
+    }
+    stages{
+        stage('Build'){
+             steps{
+                echo "este es el primer paso dentro de una serie de pasos"
+             }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                // Add your test steps here
+            }
+        }
+        stage('Variables de entorno') {
+            steps {
+                echo "${env.EXAMPLE_VAR}"
+                echo "${EXAMPLE_VAR}"
+                echo "$EXAMPLE_VAR"
+                echo "======================================"
+                sh "echo ${env.EXAMPLE_VAR}"
+                sh "echo ${EXAMPLE_VAR}"
+                sh "echo $EXAMPLE_VAR"
+                echo "======================================"
+                sh "echo ${env.MIGUEL_TEST}"
+                sh "echo ${MIGUEL_TEST}"
+                sh """echo MIGUEL_TEST"""
+            }
+        }
+        
+        stage('Canbio valor variable de entorno'){
+            steps{
+                script{
+                    EXAMPLE_VAR= 'yosmel_singao'
+                }
+                sh "echo ${EXAMPLE_VAR}"
+            }
+        }
+        
+        stage('imprimir parametro ') {
+            steps{
+                echo "${params.APELLIDO}"
+                echo "${APELLIDO}"
+                sh """echo APELLIDO"""
+            }
+        }
+        
+    }
+}
