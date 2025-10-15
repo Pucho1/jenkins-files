@@ -52,6 +52,16 @@ pipeline{
                 sh """echo APELLIDO"""
             }
         }
+
+        stage('show credential'){
+             steps{
+                withCredentials([usernamePassword(credentialsId:'git_lab_pass', usernameVariable:'CUSTOM_USER', passwordVariable:'CUSTOM_PASS')]){
+                    script{
+                         echo "El nombre de usuario es : $CUSTOM_USER y las pass es : $CUSTOM_PASS"
+                    }
+                }
+             }
+        }
         
     }
 }
