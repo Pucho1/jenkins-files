@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+    parameters{
+        string("NOMBRE_PIPELINE")
+        string("ID_JOB")
+    }
+
+    stages {
+        stage("Hello") {
+            steps {
+                echo "me ha ejecutado $NOMBRE_PIPELINE"
+            }
+        }
+    }
+}

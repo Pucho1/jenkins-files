@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+        // Opcional: variables que quieras exponer
+        REPO_URL = 'https://github.com/Pucho1/VIsnova.git'
+    }
+    stages{
+        stage('Clear WorkSpace'){
+            steps{
+                // Limpia el workspace antes de clonar, siempre se debe clonar en una carpeta limpia
+                 deleteDir()
+            }    
+        }
+        
+        stage('Get Repo'){
+             // Clono el repositorio usando las credenciales almacenadas en Jenkins
+             steps{
+                 git branch: 'main',
+                    credentialsId: 'Git',
+                    url: "${env.REPO_URL}"
+             }
+            
+            
+            // Otra forma de clonar usando credenciales pero menos recomendada por seguridad
+            // steps{
+            //     withCredentials([usernamePassword(credentialsId:'git_lab_pass', usernameVariable:'GIT_HUB_USERNAME', passwordVariable:'GIT_HUB_PASS')]){
+            //         script{
+            //             sh "git clone https://GIT_HUB_USERNAME:GIT_HUB_PASS@github.com/Pucho1/VIsnova.git"
+            //         }
+            //     }
+            // }
+        }
+    }
+}

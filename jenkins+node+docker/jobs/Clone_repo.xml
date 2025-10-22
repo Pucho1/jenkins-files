@@ -1,0 +1,91 @@
+pipeline {
+    // agent {
+    //      docker {
+    //         image "node:18"     // o node:20 si usas una versión más nueva
+    //         args "-p 3000:3000" // opcional, si tu app corre en ese puerto
+    //     }
+    // }
+    agent any
+    
+    environment {
+        // Opcional: variables que quieras exponer
+        REPO_URL = "https://github.com/Pucho1/VIsnova.git"
+        NODE_ENV = "production"
+    }
+    stages{
+        // stage('Clear WorkSpace'){
+        //     steps{
+        //          deleteDir()
+        //     }    
+        // }
+        
+        stage("Checkout"){
+             // Paso git nativo de Jenkins
+             // Solo clona o actualiza, sin borrar todo
+             steps{
+                 echo "📥 Clonando o actualizando el repositorio..."
+                 git branch: "main",
+                    credentialsId: "Git",
+                    url: "${env.REPO_URL}"
+             }
+        }
+        
+        stage("Setup Node") {
+            steps {
+                sh "
+                apt update
+                apt install -y curl
+                curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                apt install -y nodejs
+                node -v
+                npm -v
+                "
+            }
+        }
+        
+         stage("Install Dependencies") {
+            steps {
+                echo "📦 Instalando dependencias del proyecto..."
+                // npm ci es ideal para entornos de CI (más rápido y limpio que npm install)
+                sh "npm ci || npm install"
+            }
+        }
+        
+        stage("Run Tests") {
+            steps {
+                echo "🧪 Ejecutando tests de React..."
+                // Evita que jest quede esperando input
+                sh "npm test -- --watchAll=false"
+            }
+            post {
+                always {
+                    echo "✅ Tests finalizados."
+                    // Si usas jest-junit puedes publicar reportes aquí:
+                    // junit "reports/junit/*.xml"
+                }
+            }
+        }
+        
+        stage("Triget Pipeline"){
+             steps{
+                 script{
+                     build job: "trigered_job", parameters: [
+                        string(name: "NOMBRE_PIPELINE", value: "$JOB_NAME"),
+                        string(name: "ID_JOB", value: "$BUILD_ID")
+                    ]
+                 }
+             }
+        }
+    }
+}
+
+
+            
+            
+            // steps{
+            //     withCredentials([usernamePassword(credentialsId:"git_lab_pass", usernameVariable:"GIT_HUB_USERNAME", passwordVariable:"GIT_HUB_PASS")]){
+            //         script{
+            //             sh "git clone https://GIT_HUB_USERNAME:GIT_HUB_PASS@github.com/Pucho1/VIsnova.git"
+            //         }
+            //     }
+            // }
