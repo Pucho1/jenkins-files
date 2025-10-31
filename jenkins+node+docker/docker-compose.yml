@@ -1,6 +1,8 @@
 
 services:
   jenkins:
+    # user: root
+    # privileged: true
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,7 +12,10 @@ services:
       # - "50000:50000"
     volumes:
       - jenkins-files_jenkins_home1:/var/jenkins_home  # <--- aquí puedes poner el nombre exacto de tu volumen antiguo
-      - /var/run/docker.sock:/var/run/docker.sock
+      #  no la necesito por star en un entorno de windows
+      # - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=tcp://host.docker.internal:2375
     networks:
       - jenkins-sonar
     restart: always
