@@ -20,24 +20,6 @@ services:
       - jenkins-sonar
     restart: always
 
-  sonarqube:
-    image: sonarqube:lts
-    container_name: sonarqube
-   
-    environment:  # <--- configuras el aceso a la base de datos PostgreSQL
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube_db:5432/sonarqube
-      - SONAR_JDBC_USERNAME=sonar
-      - SONAR_JDBC_PASSWORD=sonar
-    ports:
-      - "9000:9000"
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-    networks:
-      - jenkins-sonar
-    restart: always
- 
   postgres:
     image: postgres:15
     container_name: sonarqube_db
@@ -50,10 +32,29 @@ services:
     networks:
       - jenkins-sonar
 
+  sonarqube:
+    image: sonarqube:lts
+    container_name: sonarqube
+    depends_on:
+      - postgres
+    environment:  # <--- configuras el aceso a la base de datos PostgreSQL
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube_db:5432/sonarqube
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data1:/opt/sonarqube/data
+      - sonarqube_extensions1:/opt/sonarqube/extensions
+    networks:
+      - jenkins-sonar
+    restart: always
+ 
 volumes:
   jenkins-files_jenkins_home1: {}
-  sonarqube_data: {}
-  sonarqube_extensions: {}
+  sonarqube_data1: {}
+  sonarqube_extensions1: {}
     # external: true  # si tu volumen ya existía, le dice a Docker Compose que no lo cree nuevo
 networks:
   jenkins-sonar:
